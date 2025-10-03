@@ -48,11 +48,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const setRole = (newRole: Role) => {
     setRoleState(newRole);
     if (newRole) {
-      localStorage.setItem('elta-role', newRole);
+      try {
+        localStorage.setItem('elta-role', newRole);
+      } catch (error) {
+         console.error('Could not access localStorage:', error);
+      }
       setActiveView('dashboard');
       router.push('/'); // Navigate to main page which will show dashboard
     } else {
-      localStorage.removeItem('elta-role');
+      try {
+        localStorage.removeItem('elta-role');
+      } catch (error) {
+        console.error('Could not access localStorage:', error);
+      }
     }
   };
 

@@ -7,9 +7,9 @@ import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from '@
 import { Badge } from '@/components/ui/badge';
 
 const widgets = [
-    { title: 'Total Active Projects', value: '8', icon: Globe, subtext: 'Across all regions', borderColor: 'border-indigo-500', valueColor: 'text-indigo-600' },
-    { title: 'Pending Approvals', value: '2', icon: AlertTriangle, subtext: 'Awaiting policy review', borderColor: 'border-yellow-500', valueColor: 'text-yellow-600' },
-    { title: 'High-Risk Project', value: '1', icon: Gavel, subtext: 'Requires audit', borderColor: 'border-red-500', valueColor: 'text-red-600' },
+    { title: 'Total Active Projects', value: '8', icon: Globe, subtext: 'Across all regions', borderColor: 'border-indigo-500', valueColor: 'text-indigo-500' },
+    { title: 'Pending Approvals', value: '2', icon: AlertTriangle, subtext: 'Awaiting policy review', borderColor: 'border-yellow-500', valueColor: 'text-yellow-500' },
+    { title: 'High-Risk Project', value: '1', icon: Gavel, subtext: 'Requires audit', borderColor: 'border-red-500', valueColor: 'text-red-500' },
 ];
 
 const recentReviews = [
@@ -20,12 +20,12 @@ const recentReviews = [
 export default function RegulatorDashboard() {
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-800">Regulator Oversight</h2>
+      <h2 className="text-3xl font-bold text-foreground">Regulator Oversight</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {widgets.map(widget => (
             <Card key={widget.title} className={`shadow-lg border-l-4 ${widget.borderColor}`}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm uppercase font-medium text-gray-600">{widget.title}</CardTitle>
+                    <CardTitle className="text-sm uppercase font-medium text-muted-foreground">{widget.title}</CardTitle>
                     <widget.icon className="h-6 w-6 text-gray-400" />
                 </CardHeader>
                 <CardContent>
@@ -60,7 +60,7 @@ export default function RegulatorDashboard() {
                                 {review.policy}
                             </TableCell>
                             <TableCell className="text-right">
-                                <Badge variant={review.status === 'Approved' ? 'default' : 'secondary' } className={review.status === 'Approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }>{review.status}</Badge>
+                                <Badge variant={review.status === 'Approved' ? 'default' : 'secondary' } className={review.status === 'Approved' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' }>{review.status}</Badge>
                             </TableCell>
                         </TableRow>
                     ))}

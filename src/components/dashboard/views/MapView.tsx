@@ -27,12 +27,12 @@ export default function MapView() {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-gray-800">Ecosystem Project Map</CardTitle>
+          <CardTitle className="text-3xl font-bold text-foreground">Ecosystem Project Map</CardTitle>
           <CardDescription>Geographical distribution of all blue carbon projects.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div id="map-container" className="h-[480px] w-full rounded-lg bg-gray-200 flex items-center justify-center border border-dashed">
-            <p className="text-gray-500">Interactive Map Placeholder</p>
+          <div id="map-container" className="h-[480px] w-full rounded-lg bg-muted/50 flex items-center justify-center border border-dashed">
+            <p className="text-muted-foreground">Interactive Map Placeholder</p>
           </div>
         </CardContent>
       </Card>
@@ -58,7 +58,7 @@ export default function MapView() {
                             <TableCell className="font-medium">{project.name}</TableCell>
                             <TableCell>{project.developer}</TableCell>
                             <TableCell>
-                               <Badge variant={project.status === 'Active' ? 'default' : 'secondary'} className={project.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>{project.status}</Badge>
+                               <Badge variant={project.status === 'Active' ? 'default' : 'secondary'} className={project.status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'}>{project.status}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
                                 <Button variant="ghost" size="sm" onClick={handleZoom}>

@@ -2,13 +2,14 @@
 import React, { useContext } from 'react';
 import { AppContext, AppContextType } from '@/context/AppProvider';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Menu, Sun, Moon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import MobileSidebar from './MobileSidebar';
-import { Menu } from 'lucide-react';
+import { useTheme } from '@/context/ThemeProvider';
 
 export default function Header() {
   const { role, activeView, setAssistantModalOpen } = useContext(AppContext) as AppContextType;
+  const { theme, setTheme } = useTheme();
 
   const getPageTitle = () => {
     if (activeView === 'dashboard') return 'Dashboard';
@@ -20,7 +21,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-30">
+    <header className="bg-background/80 backdrop-blur-sm shadow-md sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <div className="md:hidden">
@@ -35,21 +36,30 @@ export default function Header() {
               </SheetContent>
             </Sheet>
           </div>
-          <h1 className="text-xl font-extrabold text-gray-800 tracking-tight capitalize">
+          <h1 className="text-xl font-extrabold text-foreground tracking-tight capitalize">
             {getPageTitle()}
           </h1>
-          <span className="hidden sm:inline-block text-sm font-semibold text-gray-600 px-3 py-1 bg-gray-100 rounded-full">
+          <span className="hidden sm:inline-block text-sm font-semibold text-muted-foreground px-3 py-1 bg-muted rounded-full">
             {role} View
           </span>
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-2 sm:space-x-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            aria-label="Toggle theme"
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </Button>
           <Button
             onClick={() => setAssistantModalOpen(true)}
             className="bg-accent hover:bg-accent/90"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
-            AI Expert
+            <Sparkles className="h-4 w-4 mr-0 sm:mr-2" />
+            <span className="hidden sm:inline">AI Expert</span>
           </Button>
         </div>
       </div>

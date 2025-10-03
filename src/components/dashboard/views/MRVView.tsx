@@ -50,10 +50,10 @@ export default function MRVView() {
         <div className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold text-gray-800">MRV and Verification Reports</CardTitle>
+                    <CardTitle className="text-3xl font-bold text-foreground">MRV and Verification Reports</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-gray-600">This view contains tools for submitting, reviewing, or analyzing MRV data.</p>
+                    <p className="text-muted-foreground">This view contains tools for submitting, reviewing, or analyzing MRV data.</p>
                 </CardContent>
             </Card>
 
@@ -74,7 +74,7 @@ export default function MRVView() {
                         </div>
                         <div>
                             <Label>Satellite Data</Label>
-                            <div className="text-sm p-2 bg-gray-100 rounded-md border">
+                            <div className="text-sm p-2 bg-muted rounded-md border">
                                 Using simulated satellite data for this demo.
                             </div>
                         </div>
@@ -84,7 +84,7 @@ export default function MRVView() {
                         </Button>
                     </form>
                     {result && (
-                        <div className="mt-6 p-4 bg-gray-50 rounded-lg border space-y-4">
+                        <div className="mt-6 p-4 bg-muted/50 rounded-lg border space-y-4">
                             <h3 className="font-bold text-lg">Generated Report Summary</h3>
                             <div>
                                 <h4 className="font-semibold">Report Summary</h4>
