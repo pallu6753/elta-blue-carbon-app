@@ -55,7 +55,7 @@ export default function DashboardPage() {
           </div>
         </main>
         <footer className="bg-gray-900 text-white p-6 text-center text-sm">
-          &copy; 2024 Elta | Blue Carbon Certification. All rights reserved.
+          &copy; 2025 Elta | Blue Carbon Certification. All rights reserved.
         </footer>
       </div>
       <AIAssistantModal />
