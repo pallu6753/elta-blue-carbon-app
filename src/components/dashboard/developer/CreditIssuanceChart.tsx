@@ -15,16 +15,21 @@ export default function CreditIssuanceChart() {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={monthlyData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+        <BarChart data={monthlyData} margin={{ top: 5, right: 0, left: -10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-          <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+          <YAxis 
+            stroke="hsl(var(--muted-foreground))" 
+            fontSize={12}
+            tickFormatter={(value) => `${value.toLocaleString()}`}
+          />
           <Tooltip
             contentStyle={{
               background: 'hsl(var(--background))',
               borderColor: 'hsl(var(--border))',
             }}
             labelStyle={{ color: 'hsl(var(--foreground))' }}
+            formatter={(value: number) => [value.toLocaleString(), 'tCO₂e']}
           />
           <Bar dataKey="tCO2e" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
         </BarChart>
