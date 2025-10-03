@@ -17,11 +17,15 @@ const projectData = [
 
 export default function MapView() {
   const { toast } = useToast();
+  const [mapSrc, setMapSrc] = React.useState("https://www.openstreetmap.org/export/embed.html?bbox=75.0,5.0,95.0,25.0&layer=mapnik");
 
-  const handleZoom = () => {
+  const handleZoom = (coords: number[]) => {
+    const [lat, lon] = coords;
+    const bbox = `${lon - 0.5},${lat - 0.5},${lon + 0.5},${lat + 0.5}`;
+    setMapSrc(`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`);
     toast({
-        title: "Map Action",
-        description: "In a real implementation, this would zoom to the project's location on the map.",
+        title: "Zooming to Project",
+        description: "Map centered on the selected project location.",
     });
   }
 
@@ -33,8 +37,17 @@ export default function MapView() {
           <CardDescription>Geographical distribution of all blue carbon projects.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div id="map-container" className="h-[480px] w-full rounded-lg bg-muted/50 flex items-center justify-center border border-dashed">
-            <p className="text-muted-foreground">Interactive Map Placeholder</p>
+          <div id="map-container" className="h-[480px] w-full rounded-lg bg-muted/50 flex items-center justify-center border overflow-hidden">
+             <iframe
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                scrolling="no"
+                marginHeight={0}
+                marginWidth={0}
+                src={mapSrc}
+                className="w-full h-full"
+              ></iframe>
           </div>
         </CardContent>
       </Card>
@@ -65,7 +78,7 @@ export default function MapView() {
                                <Badge variant={project.status === 'Active' ? 'default' : 'secondary'} className={project.status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'}>{project.status}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                                <Button variant="ghost" size="sm" onClick={handleZoom}>
+                                <Button variant="ghost" size="sm" onClick={() => handleZoom(project.coords)}>
                                     <MapPin className="h-4 w-4 mr-1" />
                                     View on Map
                                 </Button>
