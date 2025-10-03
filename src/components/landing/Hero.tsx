@@ -23,10 +23,10 @@ export default function Hero() {
   };
 
   return (
-    <div className="text-center max-w-sm w-full p-8 rounded-xl bg-white/10 backdrop-blur-sm">
-      <Waves className="h-10 w-10 mx-auto mb-2 text-white" />
-      <h1 className="text-4xl font-extrabold mb-1 text-white">Elta</h1>
-      <p className="text-base text-gray-200 mb-8">
+    <div className="text-center max-w-sm w-full p-8 rounded-xl bg-white/90 backdrop-blur-sm shadow-2xl">
+      <Waves className="h-10 w-10 mx-auto mb-2 text-primary" />
+      <h1 className="text-4xl font-extrabold mb-1 text-blue-carbon">Elta</h1>
+      <p className="text-base text-gray-700 mb-8">
         The future of blue carbon, powered by AI and Web3.
       </p>
 
@@ -43,19 +43,19 @@ export default function Hero() {
           </SelectContent>
         </Select>
 
-        <Button type="submit" size="lg" className="w-full text-lg h-auto py-3" disabled={!selectedRole}>
+        <Button type="submit" size="lg" className="w-full text-lg h-auto py-3 bg-primary hover:bg-primary/90" disabled={!selectedRole}>
           <span>Enter Dashboard</span>
           <ArrowRight className="h-5 w-5" />
         </Button>
       </form>
 
-      <p className="text-xs text-gray-400 mt-6">
+      <p className="text-xs text-gray-500 mt-6">
         By clicking continue, you agree to our{' '}
-        <a href="#" className="underline hover:text-white">
+        <a href="#" className="underline hover:text-primary">
           Terms of Service
         </a>{' '}
         and{' '}
-        <a href="#" className="underline hover:text-white">
+        <a href="#" className="underline hover:text-primary">
           Privacy Policy
         </a>
         .
