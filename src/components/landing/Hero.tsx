@@ -23,7 +23,7 @@ export default function Hero() {
   };
 
   return (
-    <div className="text-center max-w-sm w-full p-8 rounded-xl bg-white/90 backdrop-blur-sm shadow-2xl">
+    <div className="text-center max-w-sm w-full p-8 rounded-xl bg-white/90 shadow-2xl">
       <Waves className="h-10 w-10 mx-auto mb-2 text-primary" />
       <h1 className="text-4xl font-extrabold mb-1 text-blue-carbon">Elta</h1>
       <p className="text-base text-gray-700 mb-8">

@@ -38,7 +38,7 @@ const ProcessCard = ({ icon: Icon, title, description, iconColor }: (typeof proc
 
 export default function ProcessOverview() {
   return (
-    <div className="max-w-4xl w-full p-8 rounded-xl bg-gray-100/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-2xl">
+    <div className="max-w-4xl w-full p-8 rounded-xl bg-gray-100/80 dark:bg-gray-900/80 shadow-2xl">
       <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
         Our Blue Carbon Certification Process
       </h2>

@@ -22,7 +22,7 @@ export default function ContactSection() {
   };
 
   return (
-    <div className="max-w-4xl w-full p-8 rounded-xl bg-white/90 backdrop-blur-sm shadow-2xl">
+    <div className="max-w-4xl w-full p-8 rounded-xl bg-white/90 shadow-2xl">
       <h2 className="text-3xl font-bold text-blue-carbon mb-2 text-center">
         Get in Touch
       </h2>
