@@ -1,8 +1,8 @@
 import {genkit, GenerationCommonConfig} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
-const handlebarsEqHelper = (a: any, b: any, options: any) => {
-  return a === b ? options.fn(this) : options.inverse(this);
+const handlebarsEqHelper = (a: any, b: any) => {
+  return a === b;
 };
 
 const generationConfig: GenerationCommonConfig = {
