@@ -45,7 +45,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-grow flex flex-col md:ml-16">
         <Header />
