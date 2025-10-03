@@ -8,9 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
 const projectData = [
-    { name: "Sunderbans Mangrove Restoration", developer: "Alice Developer", status: "Active", coords: [21.94, 89.18] },
-    { name: "Mahanadi Delta Seagrass Project", developer: "Alice Developer", status: "Active", coords: [20.35, 86.42] },
-    { name: "Amazon Coral Reef Protection", developer: "Global Ocean Fund", status: "Pending", coords: [-1.5, -48.0] },
+    { name: "Sunderbans Mangrove Restoration", developer: "Alice Developer", status: "Active", coords: [21.94, 89.18], credits: "4,800 tCO₂e" },
+    { name: "Mahanadi Delta Seagrass Project", developer: "Alice Developer", status: "Active", coords: [20.35, 86.42], credits: "0 tCO₂e" },
+    { name: "Amazon Coral Reef Protection", developer: "Global Ocean Fund", status: "Pending", coords: [-1.5, -48.0], credits: "0 tCO₂e" },
+    { name: "Andaman Islands Seagrass Meadow", developer: "SeaGrass Guardians", status: "Active", coords: [12.5, 92.8], credits: "1,200 tCO₂e" },
+    { name: "Gulf of Mannar Biosphere", developer: "Coastal Conservation Group", status: "Pending", coords: [9.0, 79.0], credits: "0 tCO₂e" },
 ];
 
 export default function MapView() {
@@ -48,6 +50,7 @@ export default function MapView() {
                     <TableRow>
                         <TableHead>Project</TableHead>
                         <TableHead>Developer</TableHead>
+                        <TableHead>Credits Issued</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -57,6 +60,7 @@ export default function MapView() {
                         <TableRow key={project.name}>
                             <TableCell className="font-medium">{project.name}</TableCell>
                             <TableCell>{project.developer}</TableCell>
+                            <TableCell>{project.credits}</TableCell>
                             <TableCell>
                                <Badge variant={project.status === 'Active' ? 'default' : 'secondary'} className={project.status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'}>{project.status}</Badge>
                             </TableCell>
