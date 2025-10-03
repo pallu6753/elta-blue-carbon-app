@@ -74,9 +74,7 @@
   .hero-background {
     position: relative;
     min-height: 100vh;
-    background-size: 150%;
-    background-position: 0% 50%;
-    animation: pan-ocean 40s infinite alternate ease-in-out;
+    animation: zoom-in-out 40s infinite alternate ease-in-out;
   }
 
   .hero-overlay {
@@ -88,12 +86,12 @@
     background-color: hsl(var(--background) / 0.6);
   }
 
-  @keyframes pan-ocean {
+  @keyframes zoom-in-out {
     0% {
-      background-position: 0% 50%;
+      transform: scale(1);
     }
     100% {
-      background-position: 100% 50%;
+      transform: scale(1.2);
     }
   }
 }
