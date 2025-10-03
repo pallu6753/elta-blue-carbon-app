@@ -1,12 +1,20 @@
 'use client';
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, AlertTriangle, Gavel } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Globe, AlertTriangle, Gavel, FileCheck2, Clock } from 'lucide-react';
+import ComplianceChart from './ComplianceChart';
+import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 const widgets = [
     { title: 'Total Active Projects', value: '8', icon: Globe, subtext: 'Across all regions', borderColor: 'border-indigo-500', valueColor: 'text-indigo-600' },
     { title: 'Pending Approvals', value: '2', icon: AlertTriangle, subtext: 'Awaiting policy review', borderColor: 'border-yellow-500', valueColor: 'text-yellow-600' },
     { title: 'High-Risk Project', value: '1', icon: Gavel, subtext: 'Requires audit', borderColor: 'border-red-500', valueColor: 'text-red-600' },
+];
+
+const recentReviews = [
+    { policy: 'MRV Data Integrity v2.1', status: 'Approved', icon: FileCheck2 },
+    { policy: 'Token Issuance Protocol', status: 'Pending', icon: Clock },
 ];
 
 export default function RegulatorDashboard() {
@@ -27,16 +35,40 @@ export default function RegulatorDashboard() {
             </Card>
         ))}
       </div>
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle>Ecosystem Policy Compliance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 bg-gray-50 flex items-center justify-center text-gray-400 border border-dashed rounded-lg">
-              Compliance Scorecard (Simulated)
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Ecosystem Policy Compliance</CardTitle>
+            <CardDescription>Overall compliance scores by policy area.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ComplianceChart />
+          </CardContent>
+        </Card>
+         <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Recent Policy Reviews</CardTitle>
+            <CardDescription>Status of recently reviewed governance policies.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+                <TableBody>
+                    {recentReviews.map(review => (
+                        <TableRow key={review.policy}>
+                            <TableCell className="font-medium flex items-center gap-3">
+                                <review.icon className={`h-5 w-5 ${review.status === 'Approved' ? 'text-green-500' : 'text-yellow-500'}`} />
+                                {review.policy}
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <Badge variant={review.status === 'Approved' ? 'default' : 'secondary' } className={review.status === 'Approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }>{review.status}</Badge>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
