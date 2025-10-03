@@ -15,7 +15,7 @@ const processSteps = [
     title: '2. Verify',
     description:
       'Third-party verifiers audit the collected data and approve reports, minting verified carbon credits (VCCs) on the blockchain.',
-    iconColor: 'text-yellow-300',
+    iconColor: 'text-yellow-400',
   },
   {
     icon: TrendingUp,
@@ -37,8 +37,8 @@ const ProcessCard = ({ icon: Icon, title, description, iconColor }: (typeof proc
 
 export default function ProcessOverview() {
   return (
-    <div className="max-w-4xl w-full p-8 rounded-xl bg-white/10 backdrop-blur-sm shadow-2xl">
-      <h2 className="text-2xl font-bold text-white mb-6 text-center">
+    <div className="max-w-4xl w-full p-8 rounded-xl bg-black/30 backdrop-blur-md shadow-2xl">
+      <h2 className="text-3xl font-bold text-white mb-8 text-center">
         Our Blue Carbon Certification Process
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
