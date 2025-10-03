@@ -74,9 +74,9 @@
   .hero-background {
     position: relative;
     min-height: 100vh;
-    background-size: 150%; /* Increase size for panning */
-    background-position: center;
-    animation: pan-zoom 30s infinite alternate ease-in-out;
+    background-size: 150%;
+    background-position: 0% 50%;
+    animation: pan-ocean 40s infinite alternate ease-in-out;
   }
 
   .hero-overlay {
@@ -88,15 +88,12 @@
     background-color: hsl(var(--background) / 0.6);
   }
 
-  @keyframes pan-zoom {
+  @keyframes pan-ocean {
     0% {
-      transform: scale(1.1) translateX(-5%) translateY(5%);
-    }
-    50% {
-      transform: scale(1) translateX(0%) translateY(0%);
+      background-position: 0% 50%;
     }
     100% {
-      transform: scale(1.1) translateX(5%) translateY(-5%);
+      background-position: 100% 50%;
     }
   }
 }
