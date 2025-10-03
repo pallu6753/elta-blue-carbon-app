@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "Blue ocean waves crashing, view from above, moody lighting",
+      "imageUrl": "https://images.unsplash.com/photo-1610586567122-f9f885713761?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxvY2VhbiUyMHdhdmVzfGVufDB8fHx8MTc1OTQxNzMyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ocean waves"
+    }
+  ]
 }
