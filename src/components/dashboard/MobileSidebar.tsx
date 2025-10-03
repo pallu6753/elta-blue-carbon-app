@@ -13,6 +13,7 @@ import {
 import { AppContext, AppContextType } from '@/context/AppProvider';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const navItems = [
   { view: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: ['Project Developer', 'Verifier', 'Investor', 'Regulator'] },
@@ -31,8 +32,10 @@ export default function MobileSidebar() {
   return (
     <div className="flex flex-col h-full bg-white">
       <div className="h-16 flex items-center justify-center border-b">
-        <Waves className="text-blue-carbon h-7 w-7" />
-        <span className="ml-2 text-xl font-extrabold text-gray-800">Elta</span>
+        <Link href="/" onClick={logout} className="flex items-center">
+          <Waves className="text-blue-carbon h-7 w-7" />
+          <span className="ml-2 text-xl font-extrabold text-gray-800">Elta</span>
+        </Link>
       </div>
       <div className="p-4">
         <p className="text-sm font-semibold text-gray-700 px-3 py-1 bg-gray-100 rounded-lg text-center mb-4">

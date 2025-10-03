@@ -65,9 +65,21 @@ export default function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-16 bg-white shadow-xl fixed top-0 left-0 h-full z-40">
        <TooltipProvider>
-        <div className="h-16 flex items-center justify-center border-b">
-          <Waves className="text-blue-carbon h-7 w-7" />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href="/"
+              onClick={logout}
+              className="h-16 flex items-center justify-center border-b hover:bg-gray-100 transition-colors duration-200"
+              aria-label="Homepage"
+            >
+              <Waves className="text-blue-carbon h-7 w-7" />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>Homepage</p>
+          </TooltipContent>
+        </Tooltip>
         <nav className="flex flex-col flex-grow">
           {filteredNavItems.map((item) => (
             <NavItem key={item.view} item={item} />
