@@ -64,25 +64,45 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground;
+    @apply bg-background text-foreground;
     min-height: 100vh;
-    background: linear-gradient(-45deg, hsl(var(--background)), hsl(var(--secondary)), hsl(var(--background)), hsl(var(--primary) / 0.1));
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    overflow-x: hidden;
+  }
+  
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    left: 50%;
+    min-width: 300vw;
+    min-height: 300vw;
+    background-color: hsl(var(--primary) / 0.05);
+    animation:-webkit-keyframes wave 15s infinite linear;
+    animation: wave 15s infinite linear;
+    z-index: -1;
   }
 
-  @keyframes gradientBG {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+  body::before {
+    bottom: 15vh;
+    border-radius: 45%;
+  }
+  
+  body::after {
+    bottom: 12vh;
+    opacity: .5;
+    border-radius: 47%;
   }
 }
+
+@keyframes wave {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
 
 @layer utilities {
   .hero-background {
@@ -99,7 +119,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(13, 55, 90, 0.75);
+    background-color: hsl(var(--background) / 0.6);
   }
 
   @keyframes zoom {
