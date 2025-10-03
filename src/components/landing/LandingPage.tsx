@@ -6,6 +6,7 @@ import Hero from './Hero';
 import ProcessOverview from './ProcessOverview';
 import FaqSection from './FaqSection';
 import LocationDisplay from './LocationDisplay';
+import ContactSection from './ContactSection';
 
 export default function LandingPage() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
@@ -31,6 +32,7 @@ export default function LandingPage() {
         <Hero />
         <ProcessOverview />
         <FaqSection />
+        <ContactSection />
       </div>
     </div>
   );
