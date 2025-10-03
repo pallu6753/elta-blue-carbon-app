@@ -17,12 +17,12 @@ const projectData = [
 
 export default function MapView() {
   const { toast } = useToast();
-  const [mapSrc, setMapSrc] = React.useState("https://www.openstreetmap.org/export/embed.html?bbox=75.0,5.0,95.0,25.0&layer=mapnik");
+  const [mapSrc, setMapSrc] = React.useState("https://www.openstreetmap.org/export/embed.html?bbox=75.0,5.0,95.0,25.0&layer=cyclosm");
 
   const handleZoom = (coords: number[]) => {
     const [lat, lon] = coords;
     const bbox = `${lon - 0.5},${lat - 0.5},${lon + 0.5},${lat + 0.5}`;
-    setMapSrc(`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`);
+    setMapSrc(`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=cyclosm&marker=${lat},${lon}`);
     toast({
         title: "Zooming to Project",
         description: "Map centered on the selected project location.",
