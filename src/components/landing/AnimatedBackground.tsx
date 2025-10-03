@@ -7,7 +7,7 @@ const AnimatedBackground = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  const circleColor = isDark ? 'rgba(15, 163, 129, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+  const bubbleColor = isDark ? 'rgba(20, 150, 255, 0.15)' : 'rgba(100, 180, 255, 0.2)';
 
   return (
     <div
@@ -24,18 +24,30 @@ const AnimatedBackground = () => {
     >
       <style>
         {`
-          @keyframes move {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-2000px) translateX(200px); }
+          @keyframes rise {
+            0% {
+              transform: translateY(0) translateX(0);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+              transform: translateY(-120vh) translateX(var(--sway-x));
+              opacity: 0;
+            }
           }
         `}
       </style>
-      {Array.from({ length: 15 }).map((_, i) => {
-        const size = Math.random() * 200 + 50;
-        const duration = Math.random() * 40 + 20;
-        const delay = Math.random() * -20;
+      {Array.from({ length: 25 }).map((_, i) => {
+        const size = Math.random() * 120 + 20;
+        const duration = Math.random() * 30 + 20; // 20-50 seconds
+        const delay = Math.random() * -40;
         const left = Math.random() * 100;
-        const top = Math.random() * 100 + 100;
+        const swayX = (Math.random() - 0.5) * 200; // -100px to +100px
 
         return (
           <div
@@ -45,11 +57,14 @@ const AnimatedBackground = () => {
               width: `${size}px`,
               height: `${size}px`,
               borderRadius: '50%',
-              backgroundColor: circleColor,
+              backgroundColor: bubbleColor,
+              boxShadow: `0 0 ${size / 5}px ${bubbleColor}`,
               left: `${left}%`,
-              top: `${top}%`,
-              animation: `move ${duration}s linear infinite`,
+              bottom: `-${size}px`, // Start from below the viewport
+              animation: `rise ${duration}s linear infinite`,
               animationDelay: `${delay}s`,
+              // @ts-ignore
+              '--sway-x': `${swayX}px`,
             }}
           />
         );
