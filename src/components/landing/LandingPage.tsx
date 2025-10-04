@@ -22,7 +22,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-background space-y-8 md:space-y-16">
+    <div className="flex flex-col items-center justify-center p-4 space-y-8 md:space-y-16">
       <AnimatedBackground />
       <div className="hero-overlay"></div>
       <LocationDisplay />
