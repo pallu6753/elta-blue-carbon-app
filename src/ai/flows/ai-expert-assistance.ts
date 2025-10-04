@@ -31,6 +31,7 @@ export async function aiExpertAssistance(input: AiExpertAssistanceInput): Promis
   return aiExpertAssistanceFlow(input);
 }
 
+// Define a custom model instance with the 'eq' helper.
 const expertAssistantModel = googleAI.model('gemini-1.5-flash', {
   template: {
     helpers: {
@@ -39,11 +40,12 @@ const expertAssistantModel = googleAI.model('gemini-1.5-flash', {
   },
 });
 
+// Define the prompt using the custom model.
 const prompt = ai.definePrompt({
   name: 'aiExpertAssistancePrompt',
   input: {schema: AiExpertAssistanceInputSchema},
   output: {schema: AiExpertAssistanceOutputSchema},
-  model: expertAssistantModel, // Use the custom model directly here
+  model: expertAssistantModel, // Use the custom model directly here.
   prompt: `You are elta.eco's expert Climate Tech Analyst AI. Your goal is to provide concise, professional, and highly knowledgeable answers about blockchain-based carbon certification, MRV, and sustainable development on decentralized networks.
 
 {{#if role}}
