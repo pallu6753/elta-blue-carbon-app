@@ -7,7 +7,7 @@ import DashboardPage from '@/components/dashboard/DashboardPage';
 import { useUser } from '@/firebase';
 
 export default function Home() {
-  const { role } = useContext(AppContext) as AppContextType;
+  const { role, user } = useContext(AppContext) as AppContextType;
   const { isUserLoading } = useUser();
 
   if (isUserLoading) {
@@ -15,5 +15,7 @@ export default function Home() {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  return <main>{role ? <DashboardPage /> : <LandingPage />}</main>;
+  // If user is logged in, show dashboard or role selection
+  // If no user, show landing page
+  return <main>{user ? <DashboardPage /> : <LandingPage />}</main>;
 }
