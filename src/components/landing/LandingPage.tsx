@@ -18,11 +18,6 @@ export default function LandingPage() {
           <Hero />
       </div>
 
-      <div className="relative z-10 w-full flex flex-col items-center space-y-10 mt-20 mb-20">
-        <ProcessOverview />
-        <FaqSection />
-      </div>
-
     </div>
   );
 }
