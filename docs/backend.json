@@ -1,0 +1,267 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Stores profile information for each user of the EltaBlue platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Unique identifier from external authentication provider."
+        },
+        "role": {
+          "type": "string",
+          "description": "The user's role within the platform (e.g., Project Developer, Verifier, Investor, Regulator)."
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "Timestamp of the user's last login.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "role",
+        "lastLogin"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a blue carbon project registered on the EltaBlue platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the project."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of blue carbon project (e.g., Mangrove Restoration, Seagrass Conservation)."
+        },
+        "location": {
+          "type": "string",
+          "description": "Geographic location of the project (coordinates or region)."
+        },
+        "targetTCO2e": {
+          "type": "number",
+          "description": "Estimated carbon offset target for the project (in tonnes of CO2 equivalent)."
+        },
+        "developerId": {
+          "type": "string",
+          "description": "Reference to UserProfile representing the project developer. (Relationship: UserProfile 1:N Project)"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the project (e.g., Active, Pending, Completed)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "location",
+        "targetTCO2e",
+        "developerId",
+        "status"
+      ]
+    },
+    "MRVReport": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MRVReport",
+      "type": "object",
+      "description": "Measurement, Reporting, and Verification (MRV) reports submitted for carbon projects.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MRVReport entity."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project the MRV report belongs to. (Relationship: Project 1:N MRVReport)"
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "Date when the MRV report was submitted.",
+          "format": "date-time"
+        },
+        "carbonData": {
+          "type": "string",
+          "description": "JSON data containing the measured carbon data from the MRV process."
+        },
+        "verifierId": {
+          "type": "string",
+          "description": "Reference to UserProfile that verified the MRV Report (Relationship: UserProfile 1:N MRVReport)"
+        },
+        "verificationDate": {
+          "type": "string",
+          "description": "Date the report was verified.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the MRV report (e.g., Submitted, Verified, Rejected)."
+        }
+      },
+      "required": [
+        "id",
+        "projectId",
+        "submissionDate",
+        "carbonData",
+        "verifierId",
+        "verificationDate",
+        "status"
+      ]
+    },
+    "CarbonCredit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CarbonCredit",
+      "type": "object",
+      "description": "Represents a tokenized carbon credit generated from a verified MRV report.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CarbonCredit entity."
+        },
+        "mrvReportId": {
+          "type": "string",
+          "description": "Reference to MRVReport associated with the creation of the credit. (Relationship: MRVReport 1:N CarbonCredit)"
+        },
+        "issuanceDate": {
+          "type": "string",
+          "description": "Date the carbon credit was issued.",
+          "format": "date-time"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of carbon offset represented by the credit (in tonnes of CO2 equivalent)."
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Reference to UserProfile that currently owns the credit. (Relationship: UserProfile 1:N CarbonCredit)"
+        },
+        "retirementDate": {
+          "type": "string",
+          "description": "Date the carbon credit was retired (if applicable).",
+          "format": "date-time"
+        },
+        "price": {
+          "type": "number",
+          "description": "The current market price of the carbon credit."
+        }
+      },
+      "required": [
+        "id",
+        "mrvReportId",
+        "issuanceDate",
+        "amount",
+        "ownerId"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/user_profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores profile information for each user. Path-based ownership ensures only the user can modify their profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Represents a blue carbon project. Access control based on `developerId` in the document.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "Unique identifier for the project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}/mrv_reports/{mrvReportId}",
+        "definition": {
+          "entityName": "MRVReport",
+          "schema": {
+            "$ref": "#/backend/entities/MRVReport"
+          },
+          "description": "MRV reports for a specific project. Includes denormalized `projectId` for authorization independence.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The ID of the parent project."
+            },
+            {
+              "name": "mrvReportId",
+              "description": "Unique identifier for the MRV report."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/carbon_credits/{carbonCreditId}",
+        "definition": {
+          "entityName": "CarbonCredit",
+          "schema": {
+            "$ref": "#/backend/entities/CarbonCredit"
+          },
+          "description": "Represents a tokenized carbon credit. Access control based on the `ownerId` field.",
+          "params": [
+            {
+              "name": "carbonCreditId",
+              "description": "Unique identifier for the carbon credit."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Collection to store admin roles. Existence of a document grants admin access.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to support the EltaBlue platform, emphasizing security, scalability, and ease of maintenance. It adheres to the principle of Authorization Independence by denormalizing authorization-related data, avoiding the need for `get()` calls in security rules. It also follows Structural Segregation by keeping data with different access control requirements in separate collections.\n\nThe core strategy is to use path-based ownership for private user data and denormalized membership maps for collaborative data. For collections where list operations are important (QAPs), we ensure that security rules can be applied without filtering data based on content.\n\n*   **User Profiles:** Stored under `/users/{userId}` with a dedicated `/user_profile` document. This enforces clear ownership and avoids mixing profile data with other user-related data that might have different access control needs.\n*   **Projects:** Stored under a top-level `/projects/{projectId}` collection. Access control for projects relies on the `developerId` field and potentially a `members` map (denormalized for subcollections like `/projects/{projectId}/mrv_reports`).\n*   **MRV Reports:** Stored as subcollections of `/projects/{projectId}/mrv_reports/{mrvReportId}`. The `projectId` and potentially a denormalized `members` map are copied into each MRV report to ensure Authorization Independence.\n*   **Carbon Credits:** Stored under `/carbon_credits/{carbonCreditId}`. The `ownerId` field provides ownership information. Queries for carbon credits can be secured based on this `ownerId` without requiring filtering.\n*   **Global Roles:** Stored in dedicated collections like `/roles_admin/{userId}`. The mere existence of a document in this collection grants admin privileges, simplifying security rules.\n\nThis structure allows for simple and robust security rules. For example, a rule can easily check if `request.auth.uid == resource.data.developerId` to allow a project developer to update their project, or if `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))` to grant admin privileges."
+  }
+}
