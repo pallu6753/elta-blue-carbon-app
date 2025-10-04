@@ -167,6 +167,48 @@
         "amount",
         "ownerId"
       ]
+    },
+    "Contact": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Contact",
+      "type": "object",
+      "description": "Represents a contact form submission.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Contact entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the person submitting the form."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the person submitting the form."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the person submitting the form.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message submitted in the form."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of when the form was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "message",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -260,8 +302,25 @@
             }
           ]
         }
+      },
+      {
+        "path": "/contacts/{contactId}",
+        "definition": {
+          "entityName": "Contact",
+          "schema": {
+            "$ref": "#/backend/entities/Contact"
+          },
+          "description": "Stores contact form submissions.",
+          "params": [
+            {
+              "name": "contactId",
+              "description": "Unique identifier for the contact submission."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "This Firestore structure is designed to support the EltaBlue platform, emphasizing security, scalability, and ease of maintenance. It adheres to the principle of Authorization Independence by denormalizing authorization-related data, avoiding the need for `get()` calls in security rules. It also follows Structural Segregation by keeping data with different access control requirements in separate collections.\n\nThe core strategy is to use path-based ownership for private user data and denormalized membership maps for collaborative data. For collections where list operations are important (QAPs), we ensure that security rules can be applied without filtering data based on content.\n\n*   **User Profiles:** Stored under `/users/{userId}` with a dedicated `/user_profile` document. This enforces clear ownership and avoids mixing profile data with other user-related data that might have different access control needs.\n*   **Projects:** Stored under a top-level `/projects/{projectId}` collection. Access control for projects relies on the `developerId` field and potentially a `members` map (denormalized for subcollections like `/projects/{projectId}/mrv_reports`).\n*   **MRV Reports:** Stored as subcollections of `/projects/{projectId}/mrv_reports/{mrvReportId}`. The `projectId` and potentially a denormalized `members` map are copied into each MRV report to ensure Authorization Independence.\n*   **Carbon Credits:** Stored under `/carbon_credits/{carbonCreditId}`. The `ownerId` field provides ownership information. Queries for carbon credits can be secured based on this `ownerId` without requiring filtering.\n*   **Global Roles:** Stored in dedicated collections like `/roles_admin/{userId}`. The mere existence of a document in this collection grants admin privileges, simplifying security rules.\n\nThis structure allows for simple and robust security rules. For example, a rule can easily check if `request.auth.uid == resource.data.developerId` to allow a project developer to update their project, or if `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))` to grant admin privileges."
+    "reasoning": "This Firestore structure is designed to support the EltaBlue platform, emphasizing security, scalability, and ease of maintenance. It adheres to the principle of Authorization Independence by denormalizing authorization-related data, avoiding the need for `get()` calls in security rules. It also follows Structural Segregation by keeping data with different access control requirements in separate collections.\n\nThe core strategy is to use path-based ownership for private user data and denormalized membership maps for collaborative data. For collections where list operations are important (QAPs), we ensure that security rules can be applied without filtering data based on content.\n\n*   **User Profiles:** Stored under `/users/{userId}` with a dedicated `/user_profile` document. This enforces clear ownership and avoids mixing profile data with other user-related data that might have different access control needs.\n*   **Projects:** Stored under a top-level `/projects/{projectId}` collection. Access control for projects relies on the `developerId` field and potentially a `members` map (denormalized for subcollections like `/projects/{projectId}/mrv_reports`).\n*   **MRV Reports:** Stored as subcollections of `/projects/{projectId}/mrv_reports/{mrvReportId}`. The `projectId` and potentially a denormalized `members` map are copied into each MRV report to ensure Authorization Independence.\n*   **Carbon Credits:** Stored under `/carbon_credits/{carbonCreditId}`. The `ownerId` field provides ownership information. Queries for carbon credits can be secured based on this `ownerId` without requiring filtering.\n*   **Global Roles:** Stored in dedicated collections like `/roles_admin/{userId}`. The mere existence of a document in this collection grants admin privileges, simplifying security rules.\n*   **Contacts:** Stored under a top-level `/contacts/{contactId}` collection. This will store the submissions from the 'Get in Touch' form."
   }
 }
+    

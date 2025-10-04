@@ -5,6 +5,7 @@ import { AppProvider } from '@/context/AppProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import ThemeProvider from '@/context/ThemeProvider';
+import { FirebaseClientProvider } from '@/firebase';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -22,12 +23,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-sans antialiased', inter.variable)}>
         <ThemeProvider>
-          <AppProvider>
-            {children}
-            <Toaster />
-          </AppProvider>
+          <FirebaseClientProvider>
+            <AppProvider>
+              {children}
+              <Toaster />
+            </AppProvider>
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+
+    

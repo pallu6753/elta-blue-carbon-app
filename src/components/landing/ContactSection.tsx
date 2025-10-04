@@ -9,14 +9,32 @@ import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function ContactSection() {
   const { toast } = useToast();
   const contactImage = PlaceHolderImages.find(p => p.id === 'contact-us');
+  const firestore = useFirestore();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real app, you'd handle form submission here.
+    const formData = new FormData(e.target as HTMLFormElement);
+    
+    const contactData = {
+      firstName: formData.get('first-name') as string,
+      lastName: formData.get('last-name') as string,
+      email: formData.get('email') as string,
+      message: formData.get('message') as string,
+      createdAt: serverTimestamp(),
+    };
+
+    if (firestore) {
+      const contactsCollection = collection(firestore, 'contacts');
+      addDocumentNonBlocking(contactsCollection, contactData);
+    }
+    
     toast({
       title: 'Message Sent!',
       description: "Thanks for reaching out. We'll get back to you shortly.",
@@ -74,3 +92,5 @@ export default function ContactSection() {
     </div>
   );
 }
+
+    
