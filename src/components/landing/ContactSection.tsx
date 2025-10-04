@@ -8,9 +8,11 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
 import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function ContactSection() {
   const { toast } = useToast();
+  const contactImage = PlaceHolderImages.find(p => p.id === 'contact-us');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +27,15 @@ export default function ContactSection() {
   return (
     <div className="max-w-6xl w-full p-8 rounded-xl bg-white/90 shadow-2xl overflow-hidden grid md:grid-cols-2 gap-10 items-center">
       <div className="relative h-64 md:h-full w-full rounded-lg overflow-hidden">
-        <Image 
-          src="https://picsum.photos/seed/contact/800/600"
-          alt="Contact us"
-          fill
-          style={{ objectFit: 'cover' }}
-          data-ai-hint="coastline aerial"
-        />
+        {contactImage && (
+          <Image 
+            src={contactImage.imageUrl}
+            alt={contactImage.description}
+            fill
+            style={{ objectFit: 'cover' }}
+            data-ai-hint={contactImage.imageHint}
+          />
+        )}
       </div>
       <div>
         <h2 className="text-3xl font-bold text-blue-carbon mb-2 text-center md:text-left">

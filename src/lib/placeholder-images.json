@@ -5,6 +5,18 @@
       "description": "A beautiful view of the ocean from above, showing waves and turquoise water.",
       "imageUrl": "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvY2VhbnxlbnwwfHx8fDE3NTk1NzYxNDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "ocean waves"
+    },
+    {
+      "id": "tropical-sunset",
+      "description": "A serene sunset over a tropical landscape with palm trees reflected in the water.",
+      "imageUrl": "https://images.unsplash.com/photo-1637231775524-2ce65aaadcc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx0cm9waWNhbCUyMHN1bnNldHxlbnwwfHx8fDE3NTk1Njg4NzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tropical sunset"
+    },
+    {
+      "id": "contact-us",
+      "description": "An aerial view of a stunning coastline with turquoise water and a sandy beach.",
+      "imageUrl": "https://images.unsplash.com/photo-1598432908102-ce6767f7a264?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb2FzdGxpbmUlMjBhZXJpYWx8ZW58MHx8fHwxNzU5NTY4ODc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coastline aerial"
     }
   ]
 }
