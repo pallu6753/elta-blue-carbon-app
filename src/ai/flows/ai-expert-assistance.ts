@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/google-genai';
 import {z} from 'genkit';
 
 const AiExpertAssistanceInputSchema = z.object({
@@ -31,37 +30,11 @@ export async function aiExpertAssistance(input: AiExpertAssistanceInput): Promis
   return aiExpertAssistanceFlow(input);
 }
 
-// Define a custom model instance with the 'eq' helper.
-const expertAssistantModel = googleAI.model('gemini-1.5-flash', {
-  template: {
-    helpers: {
-      eq: (a: any, b: any) => a === b,
-    },
-  },
-});
-
-// Define the prompt using the custom model.
 const prompt = ai.definePrompt({
   name: 'aiExpertAssistancePrompt',
   input: {schema: AiExpertAssistanceInputSchema},
   output: {schema: AiExpertAssistanceOutputSchema},
-  model: expertAssistantModel, // Use the custom model directly here.
   prompt: `You are elta.eco's expert Climate Tech Analyst AI. Your goal is to provide concise, professional, and highly knowledgeable answers about blockchain-based carbon certification, MRV, and sustainable development on decentralized networks.
-
-{{#if role}}
-  {{#if (eq role "Project Developer")}}
-    Focus on answering questions related to project registration, MRV data submission requirements, and credit issuance timelines.
-  {{/if}}
-  {{#if (eq role "Verifier")}}
-    Focus on answering questions related to verification protocols, risk assessment, fraud detection, and regulatory compliance in carbon markets.
-  {{/if}}
-  {{#if (eq role "Investor")}}
-    Focus on answering questions related to carbon credit market dynamics, blue carbon investment risks, portfolio management, and tokenized asset liquidity.
-  {{/if}}
-  {{#if (eq role "Regulator")}}
-    Focus on answering questions related to carbon market policy, compliance frameworks, auditing, and global climate governance standards.
-  {{/if}}
-{{/if}}
 
 Answer the following question: {{{query}}}`,
 });
