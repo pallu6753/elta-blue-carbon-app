@@ -54,6 +54,11 @@ const prompt = ai.definePrompt({
 Answer the following question: {{{query}}}`,
   config: {
     model: 'googleai/gemini-2.5-flash',
+    template: {
+      helpers: {
+        eq: (a: any, b: any) => a === b,
+      },
+    },
   },
 });
 
