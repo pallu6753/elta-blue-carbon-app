@@ -5,6 +5,7 @@ import LocationDisplay from './LocationDisplay';
 import ProcessOverview from './ProcessOverview';
 import FaqSection from './FaqSection';
 import AnimatedBackground from './AnimatedBackground';
+import ContactSection from './ContactSection';
 
 export default function LandingPage() {
 
@@ -22,8 +23,12 @@ export default function LandingPage() {
         <ProcessOverview />
       </div>
 
-      <div className="relative z-10 w-full flex flex-col items-center pb-16">
+      <div className="relative z-10 w-full flex flex-col items-center">
           <FaqSection />
+      </div>
+
+      <div className="relative z-10 w-full flex flex-col items-center pb-16">
+          <ContactSection />
       </div>
 
     </div>
