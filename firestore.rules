@@ -1,193 +1,193 @@
 /**
- * @file Firestore Security Rules for EltaBlue Platform
- * @description This ruleset enforces a strict user-ownership model for user profiles and uses denormalized fields for managing access to projects, MRV reports, and carbon credits. It also includes support for global admin roles.
+ * @file Firebase Security Rules for EltaBlue Platform
  *
- * Data Structure:
- * - /users/{userId}/user_profile: User profile information, accessible only to the user.
- * - /projects/{projectId}: Blue carbon project data, accessible to the project developer.
- * - /projects/{projectId}/mrv_reports/{mrvReportId}: MRV reports for projects, accessible to project members and verifiers.
- * - /carbon_credits/{carbonCreditId}: Carbon credit data, accessible to the credit owner.
- * - /roles_admin/{userId}: Collection to store admin roles. Existence of a document grants admin access.
- * - /contacts/{contactId}: Stores contact form submissions.
+ * @core_philosophy This ruleset enforces a combination of user-ownership, role-based access, and resource-based access control for the EltaBlue platform. It prioritizes security by default, explicitly denying access unless specifically granted.  Data shape validation is relaxed for rapid prototyping.
  *
- * Key Security Decisions:
- * - User profiles are strictly private and only accessible to the owning user.
- * - Project access is controlled through the `developerId` field in the project document.
- * - MRV report access is based on project membership (denormalized).
- * - Carbon credit access is controlled through the `ownerId` field.
- * - Admin roles are granted based on the existence of a document in the `/roles_admin/{userId}` collection.
- * - Listing of user profiles is disallowed.
- * - Contacts are available for read and write by any user.
+ * @data_structure
+ * - `/users/{userId}/user_profile`:  User profile data, owned exclusively by the user.
+ * - `/projects/{projectId}`: Blue carbon project data, controlled by the project `developerId` and potentially a `members` map.
+ * - `/projects/{projectId}/mrv_reports/{mrvReportId}`: MRV reports associated with a project. Access is determined by the project's `developerId`.
+ * - `/carbon_credits/{carbonCreditId}`: Carbon credit data, owned by a user (`ownerId`).
+ * - `/roles_admin/{userId}`: Admin role assignments. The existence of a document grants admin privileges.
+ * - `/contacts/{contactId}`: Stores contact form submissions.
  *
- * Denormalization for Authorization:
- * - MRV reports include a `projectId` field to allow security rules to be applied independently of the parent project.
- * - Project documents should contain a `members` map (e.g., `{ members: { 'user_abc': 'editor' } }`) to control access to the project and its subcollections.
+ * @key_security_decisions
+ * - Strict user ownership for profile data.
+ * - Project access controlled by `developerId` on the project document and potentially a `members` map for shared access.
+ * - Read access to user profiles and other user-owned data is restricted to the owning user.
+ * - No public listing of user-owned data.
+ * - Admin privileges granted based on the existence of a document in `/roles_admin/{userId}`.
+ * - MRV reports are secured based on the parent Project's `developerId`.
  *
- * Structural Segregation:
- * - User profile data is stored in a private subcollection under `/users/{userId}` to ensure it is not mixed with public project data.
+ * @denormalization_for_authorization To avoid costly `get()` calls, authorization data (e.g., user roles, project membership) is denormalized directly onto the documents being secured. For example, MRV reports include a `projectId` field to allow security rules to validate the parent project.
+ *
+ * @structural_segregation Private user data is stored in user-specific subcollections (e.g., `/users/{userId}/user_profile`), while public or shared data is stored in top-level collections (e.g., `/projects/{projectId}`).
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile data. Only the authenticated user can read and write their own profile.
+     * @description Manages user profile data. Only the authenticated user can read, update, or delete their own profile.
      * @path /users/{userId}/user_profile
-     * @allow (create) User with UID 'user123' creates their profile at /users/user123/user_profile
-     * @deny (create) User with UID 'user123' tries to create a profile at /users/user456/user_profile
-     * @principle Enforces document ownership for writes, restricts access to a user's own data tree.
+     * @allow (create) - Authenticated user with matching `userId` creates their profile.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.userId`: "user123"
+     * @allow (get, update, delete) - Authenticated user with matching `userId` reads, updates, or deletes their profile.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.userId`: "user123"
+     * @deny (create) - Authenticated user attempts to create a profile for a different `userId`.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.userId`: "user456"
+     * @deny (get, update, delete) - Authenticated user attempts to read, update, or delete a profile for a different `userId`.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.userId`: "user456"
+     * @principle Enforces document ownership for writes, restricts access to a user's own data tree, and validates relational integrity between documents.
      */
     match /users/{userId}/user_profile {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(userId) {
-        return request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
       }
-
-      function isExistingOwner(userId) {
-        return isOwner(userId) && existsAfter(resource);
-      }
-
-      // Allow the user to read their own profile
-      allow get: if isSignedIn() && isOwner(userId);
-      // Disallow listing user profiles
+      allow get: if isOwner(userId);
       allow list: if false;
-
-      // Allow the user to create their own profile if the userId matches
-      allow create: if isSignedIn() && isOwner(userId);
-      // Allow the user to update their own profile if the userId matches
-      allow update: if isSignedIn() && isOwner(userId);
-      // Allow the user to delete their own profile if the userId matches
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isOwner(userId) && resource.data.userId == userId;
+      allow delete: if isOwner(userId) && resource.data.userId == userId;
     }
 
     /**
-     * @description Controls access to project data.  The project `developerId` must match the authenticated user's UID for write access. Read access is public.
+     * @description Manages project data. Only the project developer (identified by `developerId`) can create, update, or delete projects. Anyone can read project data.
      * @path /projects/{projectId}
-     * @allow (get, list) Any user can read the list of projects or get an individual project.
-     * @allow (create) User with UID 'user123' creates a project with developerId: 'user123'.
-     * @deny (create) User with UID 'user123' tries to create a project with developerId: 'user456'.
-     * @deny (update, delete) User with UID 'user456' tries to update/delete a project where resource.data.developerId == 'user123'.
-     * @principle Enforces document ownership for writes; allows public read access.
+     * @allow (get, list) - Any user can read or list projects.
+     * @allow (create) - Authenticated user creates a project with their `auth.uid` as the `developerId`.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.developerId`: "user123"
+     * @allow (update, delete) - Authenticated user with matching `developerId` updates or deletes the project.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.developerId`: "user123"
+     * @deny (create) - Authenticated user attempts to create a project with a different `developerId`.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.developerId`: "user456"
+     * @deny (update, delete) - Authenticated user attempts to update or delete a project with a different `developerId`.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.developerId`: "user456"
+     * @principle Enforces document ownership for writes and allows public read access.
      */
     match /projects/{projectId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(developerId) {
-        return isSignedIn() && request.auth.uid == developerId;
+        return request.auth != null && request.auth.uid == developerId;
       }
-
-      function isExistingOwner() {
-          return isSignedIn() && request.auth.uid == resource.data.developerId;
+      function isExistingOwner(developerId) {
+          return isOwner(developerId) && resource != null;
       }
-
-      // Allow public read access
       allow get, list: if true;
-
-      // Allow creation if the developerId matches the authenticated user's UID
-      allow create: if isSignedIn() && request.resource.data.developerId == request.auth.uid;
-
-      // Allow updates and deletes if the user is the owner and the document exists
-      allow update: if isSignedIn() && isExistingOwner();
-      allow delete: if isSignedIn() && isExistingOwner();
+      allow create: if isOwner(request.resource.data.developerId);
+      allow update: if isExistingOwner(resource.data.developerId);
+      allow delete: if isExistingOwner(resource.data.developerId);
     }
 
     /**
-     * @description Controls access to MRV reports.  The project `developerId` of the parent project must match the authenticated user's UID for write access. Read access is public.
+     * @description Manages MRV reports for a specific project. Only the project developer can create, update, or delete MRV reports. Anyone can read MRV reports.
      * @path /projects/{projectId}/mrv_reports/{mrvReportId}
-     * @allow (get, list) Any user can read the list of MRV reports or get an individual report.
-     * @allow (create) User with UID 'user123' creates an MRV report under a project where the project's developerId is 'user123'.
-     * @deny (create) User with UID 'user123' tries to create an MRV report under a project where the project's developerId is 'user456'.
-     * @deny (update, delete) User with UID 'user456' tries to update/delete an MRV report under a project where the project's developerId is 'user123'.
-     * @principle Enforces document ownership for writes; allows public read access.
+     * @allow (get, list) - Any user can read or list MRV reports for a project.
+     * @allow (create) - Authenticated user creates an MRV report for a project where they are the developer.
+     *   - `auth.uid`: "user123"
+     *   - `get(/databases/$(database)/documents/projects/$(projectId)).data.developerId`: "user123"
+     * @allow (update, delete) - Authenticated user with matching `developerId` updates or deletes the MRV report.
+     *   - `auth.uid`: "user123"
+     *   - `get(/databases/$(database)/documents/projects/$(projectId)).data.developerId`: "user123"
+     * @deny (create) - Authenticated user attempts to create an MRV report for a project where they are not the developer.
+     *   - `auth.uid`: "user123"
+     *   - `get(/databases/$(database)/documents/projects/$(projectId)).data.developerId`: "user456"
+     * @deny (update, delete) - Authenticated user attempts to update or delete an MRV report for a project where they are not the developer.
+     *   - `auth.uid`: "user123"
+     *   - `get(/databases/$(database)/documents/projects/$(projectId)).data.developerId`: "user456"
+     * @principle Enforces project developer ownership for writes on MRV reports and allows public read access.
      */
     match /projects/{projectId}/mrv_reports/{mrvReportId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isProjectDeveloper(projectId) {
-        return isSignedIn() && get(/databases/$(database)/documents/projects/$(projectId)).data.developerId == request.auth.uid;
+        return request.auth != null && request.auth.uid == get(/databases/$(database)/documents/projects/$(projectId)).data.developerId;
       }
-
-      function isExistingProjectDeveloper(projectId) {
-        return isProjectDeveloper(projectId);
-      }
-
-      // Allow public read access
       allow get, list: if true;
-
-      // Allow creation if the developerId of the project matches the authenticated user's UID
-      allow create: if isSignedIn() && isProjectDeveloper(projectId);
-
-      // Allow updates and deletes if the user is the project developer and the document exists
-      allow update: if isSignedIn() && isProjectDeveloper(projectId);
-      allow delete: if isSignedIn() && isProjectDeveloper(projectId);
+      allow create: if isProjectDeveloper(projectId);
+      allow update: if isProjectDeveloper(projectId) && resource != null;
+      allow delete: if isProjectDeveloper(projectId) && resource != null;
     }
 
     /**
-     * @description Controls access to carbon credit data. Only the owner of the carbon credit can read and write it.
+     * @description Manages carbon credit data. Only the carbon credit owner (identified by `ownerId`) can update or delete the credit. Anyone can read carbon credit data.
      * @path /carbon_credits/{carbonCreditId}
-     * @allow (create) User with UID 'user123' creates a carbon credit with ownerId: 'user123'.
-     * @deny (create) User with UID 'user123' tries to create a carbon credit with ownerId: 'user456'.
-     * @deny (update, delete) User with UID 'user456' tries to update/delete a carbon credit where resource.data.ownerId == 'user123'.
-     * @principle Enforces document ownership for writes; allows public read access.
+     * @allow (get, list) - Any user can read or list carbon credits.
+     * @allow (create) - Authenticated user creates a carbon credit with their `auth.uid` as the `ownerId`.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.ownerId`: "user123"
+     * @allow (update, delete) - Authenticated user with matching `ownerId` updates or deletes the carbon credit.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.ownerId`: "user123"
+     * @deny (create) - Authenticated user attempts to create a carbon credit with a different `ownerId`.
+     *   - `auth.uid`: "user123"
+     *   - `request.resource.data.ownerId`: "user456"
+     * @deny (update, delete) - Authenticated user attempts to update or delete a carbon credit with a different `ownerId`.
+     *   - `auth.uid`: "user123"
+     *   - `resource.data.ownerId`: "user456"
+     * @principle Enforces document ownership for writes and allows public read access.
      */
     match /carbon_credits/{carbonCreditId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(ownerId) {
-        return isSignedIn() && request.auth.uid == ownerId;
+        return request.auth != null && request.auth.uid == ownerId;
       }
-
-      function isExistingOwner() {
-        return isSignedIn() && request.auth.uid == resource.data.ownerId;
+      function isExistingOwner(ownerId) {
+          return isOwner(ownerId) && resource != null;
       }
-
-      // Allow public read access
       allow get, list: if true;
-
-      // Allow creation if the ownerId matches the authenticated user's UID
-      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
-
-      // Allow updates and deletes if the user is the owner and the document exists
-      allow update: if isSignedIn() && isExistingOwner();
-      allow delete: if isSignedIn() && isExistingOwner();
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.ownerId);
+      allow delete: if isExistingOwner(resource.data.ownerId);
     }
-        /**
-         * @description Controls access to admin roles. Only admins can grant admin roles, but for now, any signed-in user can create a role
-         * @path /roles_admin/{userId}
-         * @allow (create) User with UID 'user123' creates an admin role document.
-         * @deny (update, delete) User with UID 'user123' tries to update/delete an admin role document for 'user456'.
-         * @principle Restricts modification of admin roles to admins.
-         */
-    match /roles_admin/{userId} {
+
+     /**
+      * @description Manages admin role assignments. The existence of a document in this collection grants admin privileges to the associated user.
+      * @path /roles_admin/{userId}
+      * @allow (get) - Authenticated user can check their own admin status.
+      *   - `auth.uid`: "admin123"
+      * @allow (create) - Only an existing admin can assign admin roles.
+      *   - `auth.uid`: "existingAdmin"
+      * @allow (delete) - Only an existing admin can revoke admin roles.
+      *   - `auth.uid`: "existingAdmin"
+      * @deny (create, delete) - Non-admin users cannot assign or revoke admin roles.
+      *   - `auth.uid`: "user123"
+      * @deny (get) - Non-authenticated users cannot check admin status.
+      *   - `auth.uid`: null
+      * @principle Role-based access control based on document existence.
+      */
+     match /roles_admin/{userId} {
       function isSignedIn() {
-        return request.auth != null;
+          return request.auth != null;
       }
 
-       // Allow any signed-in user to create an admin role document for themselves (for prototyping purposes)
-       allow create: if isSignedIn() && request.auth.uid == userId;
-       allow get: if isSignedIn() && request.auth.uid == userId;
-       allow list: if false;
-
-       // Restrict updates and deletes to admins (not implemented in this prototype)
-       allow update, delete: if false;
+      function isAdmin() {
+          return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin();
     }
+
     /**
-     * @description Controls access to contact form submissions.
+     * @description Manages contact form submissions. Anyone can create a contact submission.
      * @path /contacts/{contactId}
-     * @allow (get, list, create, update, delete) Any user can read, create, update, and delete contact form submissions.
-     * @principle Allows public read and write access for contact form submissions.
+     * @allow (get, list) - Any user can read or list contact submissions.
+     * @allow (create) - Any authenticated or non-authenticated user can submit a contact form.
+     * @deny (update, delete) - No user can update or delete contact submissions.
+     * @principle Allows public submissions with restricted modification rights.
      */
     match /contacts/{contactId} {
-        allow get, list, create, update, delete: if true;
+      allow get, list: if true;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }

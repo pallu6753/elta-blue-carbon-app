@@ -19,14 +19,34 @@ import {
   useCollection,
   useFirestore,
   useMemoFirebase,
-  WithId,
+  deleteDocumentNonBlocking,
 } from '@/firebase';
-import { collection, orderBy, query, Timestamp } from 'firebase/firestore';
-import { Loader2 } from 'lucide-react';
+import {
+  collection,
+  orderBy,
+  query,
+  Timestamp,
+  doc,
+} from 'firebase/firestore';
+import { Loader2, Trash2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { formatDistanceToNow } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Contact {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -36,6 +56,7 @@ interface Contact {
 
 export default function ContactsView() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   const contactsCollection = useMemoFirebase(
     () =>
       firestore
@@ -48,6 +69,17 @@ export default function ContactsView() {
     isLoading,
     error,
   } = useCollection<Contact>(contactsCollection);
+
+  const handleDelete = (contactId: string) => {
+    if (firestore) {
+      const docRef = doc(firestore, 'contacts', contactId);
+      deleteDocumentNonBlocking(docRef);
+      toast({
+        title: 'Submission Deleted',
+        description: 'The contact message has been removed.',
+      });
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -83,6 +115,7 @@ export default function ContactsView() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Message</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,11 +141,40 @@ export default function ContactsView() {
                       <TableCell className="max-w-sm truncate">
                         {contact.message}
                       </TableCell>
+                      <TableCell className="text-right">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you sure?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete the message from{' '}
+                                {contact.firstName} {contact.lastName}.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(contact.id)}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                    <TableCell colSpan={5} className="text-center">
                       No messages yet.
                     </TableCell>
                   </TableRow>
