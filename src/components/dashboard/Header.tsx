@@ -17,6 +17,7 @@ export default function Header() {
     if (activeView === 'mrv') return 'MRV/Reports';
     if (activeView === 'marketplace') return 'Marketplace';
     if (activeView === 'map') return 'Ecosystem Map';
+    if (activeView === 'contacts') return 'Contacts';
     return 'Dashboard';
   };
 

@@ -12,6 +12,7 @@ import ProjectsView from './views/ProjectsView';
 import MRVView from './views/MRVView';
 import MarketplaceView from './views/MarketplaceView';
 import MapView from './views/MapView';
+import ContactsView from './views/ContactsView';
 import AIAssistantModal from './modals/AIAssistantModal';
 import NewProjectModal from './modals/NewProjectModal';
 
@@ -20,6 +21,7 @@ const viewComponents: { [key: string]: React.ComponentType } = {
   mrv: MRVView,
   marketplace: MarketplaceView,
   map: MapView,
+  contacts: ContactsView,
 };
 
 export default function DashboardPage() {

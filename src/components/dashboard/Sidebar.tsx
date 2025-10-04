@@ -10,6 +10,7 @@ import {
   MapPin,
   Sparkles,
   LogOut,
+  Mail,
 } from 'lucide-react';
 import { AppContext, AppContextType } from '@/context/AppProvider';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ const navItems = [
   { view: 'mrv', icon: CheckSquare, label: 'MRV/Reports', roles: ['Project Developer', 'Verifier'] },
   { view: 'marketplace', icon: Landmark, label: 'Marketplace', roles: ['Investor'] },
   { view: 'map', icon: MapPin, label: 'Map View', roles: ['Project Developer', 'Verifier', 'Investor', 'Regulator'] },
+  { view: 'contacts', icon: Mail, label: 'Contacts', roles: ['Regulator'] },
 ];
 
 const NavItem = ({ item }: { item: (typeof navItems)[0] }) => {
