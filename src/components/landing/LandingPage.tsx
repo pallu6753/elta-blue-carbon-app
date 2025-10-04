@@ -4,7 +4,6 @@ import Hero from './Hero';
 import LocationDisplay from './LocationDisplay';
 import ProcessOverview from './ProcessOverview';
 import FaqSection from './FaqSection';
-import ContactSection from './ContactSection';
 import AnimatedBackground from './AnimatedBackground';
 
 export default function LandingPage() {
@@ -22,7 +21,6 @@ export default function LandingPage() {
       <div className="relative z-10 w-full flex flex-col items-center space-y-10 mt-20 mb-20">
         <ProcessOverview />
         <FaqSection />
-        <ContactSection />
       </div>
 
     </div>
