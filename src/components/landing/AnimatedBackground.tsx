@@ -1,78 +1,39 @@
 'use client';
 
-import { useTheme } from '@/context/ThemeProvider';
-import { cn } from '@/lib/utils';
 import React from 'react';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const AnimatedBackground = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-
   return (
-    <div
-      className={cn(
-        'fixed top-0 left-0 w-full h-full z-0 overflow-hidden',
-        isDark ? 'bg-[#0A102D]' : 'bg-[#E0E8F9]'
-      )}
-    >
+    <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden bg-black">
       <style>
         {`
-          @keyframes move-stars {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-2000px); }
+          @keyframes pan-zoom {
+            0% {
+              transform: scale(1) translate(0, 0);
+            }
+            50% {
+              transform: scale(1.1) translate(-2%, 2%);
+            }
+            100% {
+              transform: scale(1) translate(0, 0);
+            }
           }
-          .stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: transparent;
-            animation: move-stars 200s linear infinite;
-          }
-          .stars:after {
-            content: " ";
-            position: absolute;
-            top: 2000px;
-            width: 100%;
-            height: 100%;
-            background: transparent;
+          .animated-bg-image {
+            animation: pan-zoom 45s ease-in-out infinite;
           }
         `}
       </style>
-      <div id="stars-container" className="absolute top-0 left-0 w-full h-full">
-         <StarLayer size="1px" count={600} duration={50} isDark={isDark} />
-         <StarLayer size="2px" count={200} duration={100} isDark={isDark} />
-         <StarLayer size="3px" count={100} duration={150} isDark={isDark} />
-      </div>
+      <Image
+        alt="Lush landscape with mountains and a waterfall"
+        src="https://images.unsplash.com/photo-1500219793594-637a89851759?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3YXRlcmZhbGwlMjBtb3VudGFpbnMlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTg1MTc4fDA&ixlib=rb-4.1.0&q=80&w=1080"
+        fill
+        className="object-cover animated-bg-image"
+        data-ai-hint="waterfall mountain"
+      />
     </div>
   );
 };
-
-const StarLayer = ({ count, size, duration, isDark }: { count: number, size: string, duration: number, isDark: boolean }) => {
-  const [shadow, setShadow] = React.useState('');
-
-  React.useEffect(() => {
-    let newShadow = '';
-    for (let i = 0; i < count; i++) {
-      newShadow += `${Math.random() * 2000}px ${Math.random() * 2000}px ${isDark ? '#FFF' : '#1E3A8A'}, `;
-    }
-    newShadow = newShadow.slice(0, -2);
-    setShadow(newShadow);
-  }, [count, isDark]);
-
-  return (
-     <div className="stars" style={{
-        boxShadow: shadow,
-        width: size,
-        height: size,
-        animationDuration: `${duration}s`,
-     }} />
-  )
-}
-
 
 export default AnimatedBackground;
