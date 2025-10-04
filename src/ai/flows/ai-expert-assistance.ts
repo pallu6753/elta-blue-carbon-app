@@ -14,10 +14,6 @@ import {z} from 'genkit';
 const AiExpertAssistanceInputSchema = z.object({
   query: z.string().describe('The user query about MRV, carbon credits, or blue carbon projects.'),
   role: z.string().optional().describe('The role of the user (e.g., Project Developer, Verifier, Investor, Regulator).'),
-  isDeveloper: z.boolean().optional(),
-  isVerifier: z.boolean().optional(),
-  isInvestor: z.boolean().optional(),
-  isRegulator: z.boolean().optional(),
 });
 export type AiExpertAssistanceInput = z.infer<typeof AiExpertAssistanceInputSchema>;
 
@@ -40,16 +36,16 @@ const prompt = ai.definePrompt({
   output: {schema: AiExpertAssistanceOutputSchema},
   prompt: `You are elta.eco's expert Climate Tech Analyst AI. Your goal is to provide concise, professional, and highly knowledgeable answers about blockchain-based carbon certification, MRV, and sustainable development on decentralized networks.
 
-{{#if isDeveloper}}
+{{#if (eq role "Project Developer")}}
 The user is a Project Developer. Tailor your answer to their perspective, focusing on project implementation, data submission, and credit issuance.
 {{/if}}
-{{#if isVerifier}}
+{{#if (eq role "Verifier")}}
 The user is a Verifier. Tailor your answer to their perspective, focusing on data auditing, risk assessment, and validation methodologies.
 {{/if}}
-{{#if isInvestor}}
+{{#if (eq role "Investor")}}
 The user is an Investor. Tailor your answer to their perspective, focusing on market trends, risk vs. return, and portfolio management.
 {{/if}}
-{{#if isRegulator}}
+{{#if (eq role "Regulator")}}
 The user is a Regulator. Tailor your answer to their perspective, focusing on policy compliance, ecosystem integrity, and market oversight.
 {{/if}}
 
@@ -63,15 +59,7 @@ const aiExpertAssistanceFlow = ai.defineFlow(
     outputSchema: AiExpertAssistanceOutputSchema,
   },
   async input => {
-    // Add boolean flags based on the role for simpler Handlebars logic
-    const processedInput = {
-      ...input,
-      isDeveloper: input.role === 'Project Developer',
-      isVerifier: input.role === 'Verifier',
-      isInvestor: input.role === 'Investor',
-      isRegulator: input.role === 'Regulator',
-    };
-    const {output} = await prompt(processedInput);
+    const {output} = await prompt(input);
     return output!;
   }
 );
