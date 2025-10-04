@@ -72,12 +72,13 @@
 
 @layer utilities {
   .hero-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: hsl(var(--background) / 0.6);
+    background-color: hsl(var(--background) / 0.1);
     z-index: 1;
+    pointer-events: none;
   }
 }
