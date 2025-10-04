@@ -12,69 +12,67 @@ const AnimatedBackground = () => {
     <div
       className={cn(
         'fixed top-0 left-0 w-full h-full z-0 overflow-hidden',
-        isDark ? 'bg-gray-900' : 'bg-white'
+        isDark ? 'bg-[#0A102D]' : 'bg-[#E0E8F9]'
       )}
     >
       <style>
         {`
-          @keyframes gradient-move {
-            0% {
-              transform: translate(0px, 0px) rotate(0deg);
-            }
-            25% {
-              transform: translate(10vw, 20vh) rotate(90deg);
-            }
-            50% {
-              transform: translate(-20vw, -10vh) rotate(180deg);
-            }
-            75% {
-              transform: translate(20vw, -20vh) rotate(270deg);
-            }
-            100% {
-              transform: translate(0px, 0px) rotate(360deg);
-            }
+          @keyframes move-stars {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+          }
+          .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: transparent;
+            animation: move-stars 200s linear infinite;
+          }
+          .stars:after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 100%;
+            height: 100%;
+            background: transparent;
           }
         `}
       </style>
-      <div className="relative w-full h-full opacity-30">
-        <div
-          className="absolute rounded-full filter blur-3xl"
-          style={{
-            width: 'clamp(300px, 50vw, 800px)',
-            height: 'clamp(300px, 50vh, 800px)',
-            top: '-20%',
-            left: '-20%',
-            background: 'radial-gradient(circle, hsl(var(--primary) / 0.5) 0%, transparent 70%)',
-            animation: 'gradient-move 30s cubic-bezier(0.42, 0, 0.58, 1) infinite',
-          }}
-        />
-        <div
-          className="absolute rounded-full filter blur-3xl"
-          style={{
-            width: 'clamp(300px, 40vw, 700px)',
-            height: 'clamp(300px, 40vh, 700px)',
-            bottom: '-20%',
-            right: '-20%',
-            background: 'radial-gradient(circle, hsl(var(--accent) / 0.4) 0%, transparent 70%)',
-            animation: 'gradient-move 35s cubic-bezier(0.42, 0, 0.58, 1) infinite reverse',
-            animationDelay: '-5s',
-          }}
-        />
-        <div
-          className="absolute rounded-full filter blur-3xl"
-          style={{
-            width: 'clamp(200px, 30vw, 500px)',
-            height: 'clamp(200px, 30vh, 500px)',
-            bottom: '10%',
-            left: '10%',
-            background: 'radial-gradient(circle, hsl(var(--secondary) / 0.3) 0%, transparent 70%)',
-            animation: 'gradient-move 40s cubic-bezier(0.42, 0, 0.58, 1) infinite',
-            animationDelay: '-10s',
-          }}
-        />
+      <div id="stars-container" className="absolute top-0 left-0 w-full h-full">
+         <StarLayer size="1px" count={600} duration={50} isDark={isDark} />
+         <StarLayer size="2px" count={200} duration={100} isDark={isDark} />
+         <StarLayer size="3px" count={100} duration={150} isDark={isDark} />
       </div>
     </div>
   );
 };
+
+const StarLayer = ({ count, size, duration, isDark }: { count: number, size: string, duration: number, isDark: boolean }) => {
+  const [shadow, setShadow] = React.useState('');
+
+  React.useEffect(() => {
+    let newShadow = '';
+    for (let i = 0; i < count; i++) {
+      newShadow += `${Math.random() * 2000}px ${Math.random() * 2000}px ${isDark ? '#FFF' : '#1E3A8A'}, `;
+    }
+    newShadow = newShadow.slice(0, -2);
+    setShadow(newShadow);
+  }, [count, isDark]);
+
+  return (
+     <div className="stars" style={{
+        boxShadow: shadow,
+        width: size,
+        height: size,
+        animationDuration: `${duration}s`,
+     }} />
+  )
+}
+
 
 export default AnimatedBackground;
