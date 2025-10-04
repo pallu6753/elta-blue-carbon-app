@@ -31,6 +31,7 @@ export async function aiExpertAssistance(input: AiExpertAssistanceInput): Promis
   return aiExpertAssistanceFlow(input);
 }
 
+// Define a custom model instance that knows about the 'eq' helper.
 const expertAssistantModel = googleAI.model('gemini-1.5-flash', {
   template: {
     helpers: {
@@ -61,6 +62,7 @@ const prompt = ai.definePrompt({
 {{/if}}
 
 Answer the following question: {{{query}}}`,
+  // Use the custom model in the prompt's configuration.
   config: {
     model: expertAssistantModel,
   },
