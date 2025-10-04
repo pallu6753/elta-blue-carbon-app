@@ -46,7 +46,7 @@ const chartConfig = {
 
 export default function RiskAnalysisChart() {
   return (
-    <div className="h-[250px] w-full">
+    <div className="h-[250px] w-full flex justify-center">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
