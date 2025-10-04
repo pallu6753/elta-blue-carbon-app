@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/google-genai';
 import {z} from 'genkit';
 
 const AiExpertAssistanceInputSchema = z.object({
@@ -29,6 +30,15 @@ export type AiExpertAssistanceOutput = z.infer<typeof AiExpertAssistanceOutputSc
 export async function aiExpertAssistance(input: AiExpertAssistanceInput): Promise<AiExpertAssistanceOutput> {
   return aiExpertAssistanceFlow(input);
 }
+
+// Define a custom model with the required helper
+const expertAssistantModel = googleAI.model('gemini-2.5-flash', {
+  template: {
+    helpers: {
+      eq: (a: any, b: any) => a === b,
+    },
+  },
+});
 
 const prompt = ai.definePrompt({
   name: 'aiExpertAssistancePrompt',
@@ -53,12 +63,8 @@ const prompt = ai.definePrompt({
 
 Answer the following question: {{{query}}}`,
   config: {
-    model: 'googleai/gemini-2.5-flash',
-    template: {
-      helpers: {
-        eq: (a: any, b: any) => a === b,
-      },
-    },
+    // Use the custom-defined model here
+    model: expertAssistantModel,
   },
 });
 
