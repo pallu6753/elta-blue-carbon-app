@@ -15,7 +15,6 @@ import MapView from './views/MapView';
 import ContactsView from './views/ContactsView';
 import AIAssistantModal from './modals/AIAssistantModal';
 import NewProjectModal from './modals/NewProjectModal';
-import Hero from '../landing/Hero';
 
 const viewComponents: { [key: string]: React.ComponentType } = {
   projects: ProjectsView,
@@ -29,15 +28,6 @@ export default function DashboardPage() {
   const { role, activeView } = useContext(AppContext) as AppContextType;
 
   const renderDashboardContent = () => {
-    // If user is authenticated but has no role, show the role selection.
-    if (!role) {
-      return (
-        <div className="flex items-center justify-center h-full">
-           <Hero />
-        </div>
-      )
-    }
-
     if (activeView === 'dashboard') {
       switch (role) {
         case 'Project Developer':
@@ -56,33 +46,22 @@ export default function DashboardPage() {
     return ViewComponent ? <ViewComponent /> : <div>Page not found</div>;
   };
 
-  // If there's a role, show the full dashboard with sidebar etc.
-  if (role) {
-    return (
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <div className="flex-grow flex flex-col md:ml-16">
-          <Header />
-          <main className="flex-grow p-4 sm:p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto">
-              {renderDashboardContent()}
-            </div>
-          </main>
-          <footer className="bg-gray-900 text-white p-6 text-center text-sm">
-            &copy; 2025 Elta | Blue Carbon Certification. All rights reserved.
-          </footer>
-        </div>
-        <AIAssistantModal />
-        <NewProjectModal />
-      </div>
-    );
-  }
-
-  // If no role yet, just render the content without the full dashboard layout.
-  // This is for the role selection screen.
   return (
-     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        {renderDashboardContent()}
-     </div>
-  )
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <div className="flex-grow flex flex-col md:ml-16">
+        <Header />
+        <main className="flex-grow p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {renderDashboardContent()}
+          </div>
+        </main>
+        <footer className="bg-gray-900 text-white p-6 text-center text-sm">
+          &copy; 2025 Elta | Blue Carbon Certification. All rights reserved.
+        </footer>
+      </div>
+      <AIAssistantModal />
+      <NewProjectModal />
+    </div>
+  );
 }

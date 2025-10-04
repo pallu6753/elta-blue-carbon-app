@@ -40,42 +40,30 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   useEffect(() => {
-    if (isUserLoading || !firestore) return;
+    if (isUserLoading || !auth) return;
 
     if (!user) {
-      // User is logged out or session expired
-      setRoleState(null);
-      if (window.location.pathname.startsWith('/dashboard')) {
-          router.push('/');
-      }
-      return;
+      initiateAnonymousSignIn(auth);
     }
+  }, [user, isUserLoading, auth]);
+  
+  useEffect(() => {
+    if (!user || !firestore) return;
 
-    // User is logged in, listen for role changes
     const userProfileRef = doc(firestore, 'users', user.uid);
     const unsubscribe = onSnapshot(userProfileRef, (doc) => {
-      if (doc.exists()) {
-        const userRole = doc.data().role as Role;
-        if (userRole) {
-          setRoleState(userRole);
-          // If they have a role and are on the landing page, move to dashboard
-          if (window.location.pathname === '/') {
-            setActiveView('dashboard');
-          }
-        } else {
-          // User is logged in but has no role yet
-          setRoleState(null);
+      if (doc.exists() && doc.data().role) {
+        setRoleState(doc.data().role as Role);
+        if (window.location.pathname === '/') {
+          setActiveView('dashboard');
         }
       } else {
-        // This is a new user who has just signed up.
-        // The setRole function will create their profile.
         setRoleState(null);
       }
     });
 
     return () => unsubscribe();
-
-  }, [user, isUserLoading, firestore, router]);
+  }, [user, firestore, router]);
   
 
   const setRole = async (newRole: Role) => {
@@ -90,7 +78,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         lastLogin: serverTimestamp(),
       }, { merge: true });
       
-      setRoleState(newRole); // Eagerly update state
+      setRoleState(newRole);
       setActiveView('dashboard');
     } catch (error) {
       console.error("Error setting user role:", error);
@@ -98,12 +86,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    if (auth) {
-        signOut(auth).then(() => {
-            setRoleState(null); 
-            router.push('/');
-        });
-    }
+    // For anonymous auth, "logging out" means resetting the role
+    // and navigating to the landing page. A true sign-out is not needed
+    // as the session is temporary.
+    setRoleState(null);
+    router.push('/');
   };
 
   const value = {
@@ -120,9 +107,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   if (!isMounted) {
-    return null; // or a loading spinner
+    return null;
   }
 
+  // Show dashboard if role is set, otherwise show landing page (with role selection)
   return (
     <AppContext.Provider value={value}>
       {children}
