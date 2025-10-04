@@ -25,10 +25,8 @@
         }
       },
       "required": [
-        "id",
         "userId",
-        "role",
-        "lastLogin"
+        "role"
       ]
     },
     "Project": {
@@ -202,7 +200,6 @@
         }
       },
       "required": [
-        "id",
         "firstName",
         "lastName",
         "email",
@@ -218,109 +215,35 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}/user_profile",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores profile information for each user. Path-based ownership ensures only the user can modify their profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Auth UID of the user."
-            }
-          ]
-        }
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/backend/entities/UserProfile"
       },
-      {
-        "path": "/projects/{projectId}",
-        "definition": {
-          "entityName": "Project",
-          "schema": {
-            "$ref": "#/backend/entities/Project"
-          },
-          "description": "Represents a blue carbon project. Access control based on `developerId` in the document.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "Unique identifier for the project."
-            }
-          ]
-        }
+      "description": "Stores profile information for each user."
+    },
+    "/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Project"
       },
-      {
-        "path": "/projects/{projectId}/mrv_reports/{mrvReportId}",
-        "definition": {
-          "entityName": "MRVReport",
-          "schema": {
-            "$ref": "#/backend/entities/MRVReport"
-          },
-          "description": "MRV reports for a specific project. Includes denormalized `projectId` for authorization independence.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "The ID of the parent project."
-            },
-            {
-              "name": "mrvReportId",
-              "description": "Unique identifier for the MRV report."
-            }
-          ]
-        }
+      "description": "Represents a blue carbon project."
+    },
+    "/projects/{projectId}/mrv_reports/{mrvReportId}": {
+      "schema": {
+        "$ref": "#/backend/entities/MRVReport"
       },
-      {
-        "path": "/carbon_credits/{carbonCreditId}",
-        "definition": {
-          "entityName": "CarbonCredit",
-          "schema": {
-            "$ref": "#/backend/entities/CarbonCredit"
-          },
-          "description": "Represents a tokenized carbon credit. Access control based on the `ownerId` field.",
-          "params": [
-            {
-              "name": "carbonCreditId",
-              "description": "Unique identifier for the carbon credit."
-            }
-          ]
-        }
+      "description": "MRV reports for a specific project."
+    },
+    "/carbon_credits/{carbonCreditId}": {
+      "schema": {
+        "$ref": "#/backend/entities/CarbonCredit"
       },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "roles_admin",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Collection to store admin roles. Existence of a document grants admin access.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Auth UID of the user."
-            }
-          ]
-        }
+      "description": "Represents a tokenized carbon credit."
+    },
+    "/contacts/{contactId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Contact"
       },
-      {
-        "path": "/contacts/{contactId}",
-        "definition": {
-          "entityName": "Contact",
-          "schema": {
-            "$ref": "#/backend/entities/Contact"
-          },
-          "description": "Stores contact form submissions.",
-          "params": [
-            {
-              "name": "contactId",
-              "description": "Unique identifier for the contact submission."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "This Firestore structure is designed to support the EltaBlue platform, emphasizing security, scalability, and ease of maintenance. It adheres to the principle of Authorization Independence by denormalizing authorization-related data, avoiding the need for `get()` calls in security rules. It also follows Structural Segregation by keeping data with different access control requirements in separate collections.\n\nThe core strategy is to use path-based ownership for private user data and denormalized membership maps for collaborative data. For collections where list operations are important (QAPs), we ensure that security rules can be applied without filtering data based on content.\n\n*   **User Profiles:** Stored under `/users/{userId}` with a dedicated `/user_profile` document. This enforces clear ownership and avoids mixing profile data with other user-related data that might have different access control needs.\n*   **Projects:** Stored under a top-level `/projects/{projectId}` collection. Access control for projects relies on the `developerId` field and potentially a `members` map (denormalized for subcollections like `/projects/{projectId}/mrv_reports`).\n*   **MRV Reports:** Stored as subcollections of `/projects/{projectId}/mrv_reports/{mrvReportId}`. The `projectId` and potentially a denormalized `members` map are copied into each MRV report to ensure Authorization Independence.\n*   **Carbon Credits:** Stored under `/carbon_credits/{carbonCreditId}`. The `ownerId` field provides ownership information. Queries for carbon credits can be secured based on this `ownerId` without requiring filtering.\n*   **Global Roles:** Stored in dedicated collections like `/roles_admin/{userId}`. The mere existence of a document in this collection grants admin privileges, simplifying security rules.\n*   **Contacts:** Stored under a top-level `/contacts/{contactId}` collection. This will store the submissions from the 'Get in Touch' form."
+      "description": "Stores contact form submissions."
+    }
   }
 }
-    

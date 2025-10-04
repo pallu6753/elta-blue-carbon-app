@@ -31,7 +31,7 @@ export default function Hero() {
       </p>
 
       <form onSubmit={handleEnter}>
-        <Select onValueChange={(value) => setSelectedRole(value as Role)} value={selectedRole || undefined}>
+        <Select onValueChange={(value) => setSelectedRole(value as Role)} value={selectedRole || ''}>
           <SelectTrigger className="w-full p-3 mb-6 bg-white text-gray-800 border border-gray-300 rounded-lg shadow-inner focus:ring-primary focus:border-primary h-auto text-base">
             <SelectValue placeholder="Select your role..." />
           </SelectTrigger>
