@@ -26,11 +26,11 @@ const AnimatedBackground = () => {
         `}
       </style>
       <Image
-        alt="Sunlight filtering through a lush mangrove forest with roots visible in the water"
-        src="https://images.unsplash.com/photo-1518457607833-85e394584a34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW5ncm92ZSUyMGZvcmVzdHxlbnwwfHx8fDE3NTk1ODU4Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        alt="A long exposure shot of a pier extending into a calm ocean at sunset"
+        src="https://images.unsplash.com/photo-1494783367193-149034c05e8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvY2VhbiUyMHBpZXJ8ZW58MHx8fHwxNzU5ODMxNTA0fDA&ixlib=rb-4.1.0&q=80&w=1080"
         fill
         className="object-cover animated-bg-image"
-        data-ai-hint="mangrove forest"
+        data-ai-hint="ocean pier"
       />
     </div>
   );
