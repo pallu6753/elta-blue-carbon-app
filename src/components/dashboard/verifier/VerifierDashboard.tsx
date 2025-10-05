@@ -23,7 +23,9 @@ const reportsToReview = [
   { name: 'Ocean Reef Project - Annual Audit', developer: 'Global Ocean Fund', risk: 'High', developerWallet: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', amount: 350 },
 ];
 
-// This would be the address of your deployed smart contract on a real network
+// This address is for the local Hardhat test network.
+// In a production environment, this would be the address of the contract
+// deployed on a Layer 2 network like Polygon or Arbitrum for scalability.
 const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
 
 
