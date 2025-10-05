@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, initiateAnonymousSignIn, useUser } from '@/firebase';
+import { useAuth, initiateAnonymousSignIn, useUser, updateDocumentNonBlocking } from '@/firebase';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Auth, signOut } from 'firebase/auth';
@@ -55,13 +55,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const userProfileRef = doc(firestore, 'users', user.uid);
     const unsubscribe = onSnapshot(userProfileRef, (doc) => {
-      if (doc.exists() && doc.data().role) {
-        setRoleState(doc.data().role as Role);
-        if (window.location.pathname === '/') {
-          setActiveView('dashboard');
+      if (doc.exists()) {
+        const data = doc.data();
+        if (data.role) {
+          setRoleState(data.role as Role);
+          if (window.location.pathname === '/') {
+            setActiveView('dashboard');
+          }
+        }
+        if (data.walletAddress) {
+          setWalletAddress(data.walletAddress);
         }
       } else {
         setRoleState(null);
+        setWalletAddress(null);
       }
     });
 
@@ -74,7 +81,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const { BrowserProvider } = await import('ethers');
         const provider = new BrowserProvider(window.ethereum);
         const accounts = await provider.send('eth_requestAccounts', []);
-        setWalletAddress(accounts[0]);
+        const newAddress = accounts[0];
+        setWalletAddress(newAddress);
+        
+        if (user && firestore) {
+          const userProfileRef = doc(firestore, 'users', user.uid);
+          updateDocumentNonBlocking(userProfileRef, { walletAddress: newAddress });
+        }
+
       } catch (error) {
         console.error("Error connecting to wallet:", error);
       }
@@ -106,6 +120,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // For anonymous auth, "logging out" means resetting the role
     // and navigating to the landing page. A true sign-out is not needed
     // as the session is temporary.
+    if (user && firestore && walletAddress) {
+        const userProfileRef = doc(firestore, 'users', user.uid);
+        updateDocumentNonBlocking(userProfileRef, { walletAddress: null });
+    }
     setRoleState(null);
     setWalletAddress(null); // Disconnect wallet on logout
     router.push('/');

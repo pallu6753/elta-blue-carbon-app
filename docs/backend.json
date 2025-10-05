@@ -22,6 +22,10 @@
           "type": "string",
           "description": "Timestamp of the user's last login.",
           "format": "date-time"
+        },
+        "walletAddress": {
+          "type": "string",
+          "description": "The user's connected blockchain wallet address."
         }
       },
       "required": [
@@ -146,7 +150,7 @@
         },
         "ownerId": {
           "type": "string",
-          "description": "Reference to UserProfile that currently owns the credit. (Relationship: UserProfile 1:N CarbonCredit)"
+          "description": "Reference to UserProfile that currently owns the credit. (Relationship: UserProfile 1_N CarbonCredit)"
         },
         "retirementDate": {
           "type": "string",

@@ -1,8 +1,8 @@
 'use client';
 import React, { useContext } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, FileText, DollarSign, Plus } from 'lucide-react';
+import { Briefcase, FileText, DollarSign, Plus, Wallet } from 'lucide-react';
 import { AppContext, AppContextType } from '@/context/AppProvider';
 import CreditIssuanceChart from './CreditIssuanceChart';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
@@ -20,11 +20,17 @@ const recentProjects = [
 ]
 
 export default function DeveloperDashboard() {
-  const { setNewProjectModalOpen } = useContext(AppContext) as AppContextType;
+  const { setNewProjectModalOpen, walletAddress } = useContext(AppContext) as AppContextType;
+
+  const formatAddress = (address: string | null) => {
+    if (!address) return "Not Connected";
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  }
+
   return (
     <div className="space-y-8">
         <h2 className="text-3xl font-bold text-foreground">Developer Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {widgets.map(widget => (
                 <Card key={widget.title} className="shadow-lg">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -37,6 +43,16 @@ export default function DeveloperDashboard() {
                     </CardContent>
                 </Card>
             ))}
+             <Card className="shadow-lg col-span-1 md:col-span-2 lg:col-span-1">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm uppercase font-medium text-muted-foreground">Wallet Information</CardTitle>
+                    <Wallet className="h-6 w-6 text-gray-400" />
+                </CardHeader>
+                <CardContent>
+                    <div className={`text-2xl font-extrabold text-primary truncate`}>{formatAddress(walletAddress)}</div>
+                    <p className="text-xs text-muted-foreground">{ walletAddress ? 'Your primary wallet for receiving credits.' : 'Connect your wallet to get started.'}</p>
+                </CardContent>
+            </Card>
         </div>
 
         <Card className="shadow-lg">
