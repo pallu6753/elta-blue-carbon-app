@@ -2,13 +2,13 @@
 import React, { useContext } from 'react';
 import { AppContext, AppContextType } from '@/context/AppProvider';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Menu, Sun, Moon } from 'lucide-react';
+import { Sparkles, Menu, Sun, Moon, Wallet } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import MobileSidebar from './MobileSidebar';
 import { useTheme } from '@/context/ThemeProvider';
 
 export default function Header() {
-  const { role, activeView, setAssistantModalOpen } = useContext(AppContext) as AppContextType;
+  const { role, activeView, setAssistantModalOpen, walletAddress, connectWallet } = useContext(AppContext) as AppContextType;
   const { theme, setTheme } = useTheme();
 
   const getPageTitle = () => {
@@ -20,6 +20,10 @@ export default function Header() {
     if (activeView === 'contacts') return 'Contacts';
     return 'Dashboard';
   };
+
+  const formatAddress = (address: string) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  }
 
   return (
     <header className="bg-background/80 backdrop-blur-sm shadow-md sticky top-0 z-30">
@@ -45,7 +49,7 @@ export default function Header() {
           </span>
         </div>
 
-        <div className="flex items-center space-x-2 sm:space-x-6">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <Button
             variant="ghost"
             size="icon"
@@ -55,6 +59,20 @@ export default function Header() {
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
+          
+          {walletAddress ? (
+            <Button variant="outline" className="border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700">
+               <Wallet className="h-4 w-4 mr-2" />
+               <span className="hidden sm:inline">{formatAddress(walletAddress)}</span>
+               <span className="sm:hidden">Connected</span>
+            </Button>
+          ) : (
+            <Button onClick={connectWallet} variant="outline">
+              <Wallet className="h-4 w-4 mr-2" />
+              Connect Wallet
+            </Button>
+          )}
+
           <Button
             onClick={() => setAssistantModalOpen(true)}
             className="bg-accent hover:bg-accent/90"

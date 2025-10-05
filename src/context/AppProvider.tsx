@@ -6,6 +6,7 @@ import { useAuth, initiateAnonymousSignIn, useUser } from '@/firebase';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Auth, signOut } from 'firebase/auth';
+import { ethers } from 'ethers';
 
 export type Role = 'Project Developer' | 'Verifier' | 'Investor' | 'Regulator' | null;
 
@@ -20,6 +21,8 @@ export interface AppContextType {
   setActiveView: (view: string) => void;
   logout: () => void;
   user: any;
+  walletAddress: string | null;
+  connectWallet: () => void;
 }
 
 export const AppContext = createContext<AppContextType | null>(null);
@@ -30,6 +33,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isNewProjectModalOpen, setNewProjectModalOpen] = useState(false);
   const [activeView, setActiveView] = useState('dashboard');
   const [isMounted, setIsMounted] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const router = useRouter();
   const auth = useAuth() as Auth;
   const { user, isUserLoading } = useUser();
@@ -65,6 +69,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, [user, firestore, router]);
   
+  const connectWallet = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.send('eth_requestAccounts', []);
+        setWalletAddress(accounts[0]);
+      } catch (error) {
+        console.error("Error connecting to wallet:", error);
+      }
+    } else {
+      alert("Please install MetaMask or another Ethereum wallet.");
+    }
+  };
 
   const setRole = async (newRole: Role) => {
     if (!user || !firestore || !newRole) return;
@@ -90,6 +107,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // and navigating to the landing page. A true sign-out is not needed
     // as the session is temporary.
     setRoleState(null);
+    setWalletAddress(null); // Disconnect wallet on logout
     router.push('/');
   };
 
@@ -104,6 +122,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setActiveView,
     logout,
     user,
+    walletAddress,
+    connectWallet,
   };
 
   if (!isMounted) {
