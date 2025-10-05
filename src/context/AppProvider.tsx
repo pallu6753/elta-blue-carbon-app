@@ -6,7 +6,6 @@ import { useAuth, initiateAnonymousSignIn, useUser } from '@/firebase';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Auth, signOut } from 'firebase/auth';
-import { BrowserProvider } from 'ethers';
 
 export type Role = 'Project Developer' | 'Verifier' | 'Investor' | 'Regulator' | null;
 
@@ -72,6 +71,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const connectWallet = async () => {
     if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
       try {
+        const { BrowserProvider } = await import('ethers');
         const provider = new BrowserProvider(window.ethereum);
         const accounts = await provider.send('eth_requestAccounts', []);
         setWalletAddress(accounts[0]);
