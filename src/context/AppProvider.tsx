@@ -70,7 +70,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [user, firestore, router]);
   
   const connectWallet = async () => {
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send('eth_requestAccounts', []);
